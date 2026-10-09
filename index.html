@@ -5,16 +5,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Súper</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f2;
+            color: #24352b;
+            min-height: 100vh;
+            padding: 60px 20px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(30, 70, 45, 0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #246b45;
+            margin-bottom: 12px;
+        }
+
+        header p {
+            color: #7a887f;
+            line-height: 1.6;
+        }
+
+        .form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 35px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 15px;
+            border: 1px solid #dce5de;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #31845a;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .add {
+            background: #267447;
+            color: white;
+        }
+
+        .add:hover {
+            background: #195a35;
+        }
+
+        h2 {
+            font-size: 21px;
+            margin-bottom: 18px;
+        }
+
+        #lista {
+            list-style: none;
+        }
+
+        #lista li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 17px;
+            background: #f8faf8;
+            border: 1px solid #e8eee9;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            overflow-wrap: anywhere;
+        }
+
+        .delete {
+            background: #fee9e7;
+            color: #bd443d;
+            padding: 9px 12px;
+        }
+
+        .delete:hover {
+            background: #fbd4d0;
+        }
+
+        .empty {
+            color: #87938a;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #9aa59d;
+            font-size: 12px;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .container {
+                padding: 25px 18px;
+            }
+
+            h1 {
+                font-size: 27px;
+            }
+
+            .form {
+                flex-direction: column;
+            }
+
+            .add {
+                padding: 14px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>🛒 Lista de Súper</h1>
+    <main class="container">
+        <header>
+            <div class="icon">🛒</div>
+            <h1>Lista de Súper</h1>
+            <p>Organizá tus compras de manera simple.</p>
+        </header>
 
-    <input type="text" id="producto" placeholder="Ingresá un producto">
+        <form class="form" id="formulario">
+            <input
+                type="text"
+                id="producto"
+                placeholder="¿Qué necesitás comprar?"
+                autocomplete="off"
+            >
+            <button class="add" type="submit">+ Agregar</button>
+        </form>
 
-    <button onclick="nuevo()">Agregar</button>
+        <h2>Mis productos</h2>
+        <ul id="lista"></ul>
 
-    <h2>Productos</h2>
-    <ul id="lista"></ul>
+        <p class="footer">TU LISTA DE COMPRAS · SIMPLE Y ORGANIZADA</p>
+    </main>
 
     <script>
         let productos = ["Sal", "Leche", "Arroz"];
@@ -26,43 +195,63 @@
         }
 
         function mostrarLista() {
-            let lista = document.getElementById("lista");
+            const lista = document.getElementById("lista");
             lista.innerHTML = "";
 
+            if (productos.length === 0) {
+                lista.innerHTML =
+                    '<li class="empty">Todavía no hay productos.</li>';
+                return;
+            }
+
             productos.forEach((producto, indice) => {
-                let item = document.createElement("li");
-                item.textContent = `${indice}: ${producto} `;
+                const item = document.createElement("li");
+                const nombre = document.createElement("span");
+                const boton = document.createElement("button");
 
-                let boton = document.createElement("button");
+                nombre.className = "product-name";
+                nombre.textContent = `${indice}: ${producto}`;
+
+                boton.className = "delete";
                 boton.textContent = "Borrar";
-                boton.onclick = function() {
-                    borrar(indice);
-                };
+                boton.type = "button";
 
+                boton.addEventListener("click", function () {
+                    borrar(indice);
+                });
+
+                item.appendChild(nombre);
                 item.appendChild(boton);
                 lista.appendChild(item);
             });
+
+            logItems(productos);
         }
 
-        function nuevo() {
-            let input = document.getElementById("producto");
-            let producto = input.value.trim();
-
-            if (producto !== "") {
-                productos.push(producto);
-                input.value = "";
+        function nuevo(producto) {
+            if (producto.trim() !== "") {
+                productos.push(producto.trim());
                 mostrarLista();
             }
         }
 
         function borrar(indice) {
-            let eliminado = productos.splice(indice, 1);
-            console.log("Producto eliminado: " + eliminado[0]);
+            const eliminado = productos.splice(indice, 1);
+            console.log("Producto eliminado:", eliminado[0]);
             mostrarLista();
         }
 
+        document.getElementById("formulario")
+            .addEventListener("submit", function (evento) {
+                evento.preventDefault();
+
+                const input = document.getElementById("producto");
+                nuevo(input.value);
+                input.value = "";
+                input.focus();
+            });
+
         mostrarLista();
-        logItems(productos);
     </script>
 </body>
 </html>
