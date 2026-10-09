@@ -7,9 +7,62 @@
     <title>Lista de Súper</title>
 </head>
 <body>
-    <h1>Lista de Súper</h1>
-    <p>Usá los comandos que aparecen en las ventanas emergentes.</p>
+    <h1>🛒 Lista de Súper</h1>
 
-    <script src="index.js"></script>
+    <input type="text" id="producto" placeholder="Ingresá un producto">
+
+    <button onclick="nuevo()">Agregar</button>
+
+    <h2>Productos</h2>
+    <ul id="lista"></ul>
+
+    <script>
+        let productos = ["Sal", "Leche", "Arroz"];
+
+        function logItems(arreglo) {
+            arreglo.forEach((producto, indice) => {
+                console.log(`${indice}: ${producto}`);
+            });
+        }
+
+        function mostrarLista() {
+            let lista = document.getElementById("lista");
+            lista.innerHTML = "";
+
+            productos.forEach((producto, indice) => {
+                let item = document.createElement("li");
+                item.textContent = `${indice}: ${producto} `;
+
+                let boton = document.createElement("button");
+                boton.textContent = "Borrar";
+                boton.onclick = function() {
+                    borrar(indice);
+                };
+
+                item.appendChild(boton);
+                lista.appendChild(item);
+            });
+        }
+
+        function nuevo() {
+            let input = document.getElementById("producto");
+            let producto = input.value.trim();
+
+            if (producto !== "") {
+                productos.push(producto);
+                input.value = "";
+                mostrarLista();
+            }
+        }
+
+        function borrar(indice) {
+            let eliminado = productos.splice(indice, 1);
+            console.log("Producto eliminado: " + eliminado[0]);
+            mostrarLista();
+        }
+
+        mostrarLista();
+        logItems(productos);
+    </script>
 </body>
 </html>
